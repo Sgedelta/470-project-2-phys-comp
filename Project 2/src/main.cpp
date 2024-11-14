@@ -79,7 +79,6 @@ void loop() {
         playerStep++;
         delay(300);  // Debounce delay to prevent multiple presses being detected too quickly
       } else {
-        gameFailTone();
         endGame();  // Player pressed the wrong button, game ends
         return;  // End the game if the player is wrong
       }
@@ -177,18 +176,6 @@ void gameStartTone() {
   tone(10, toneg5, 125);
   delay(625);
   tone(10, tonec6, 125);
-  delay(125);
-}
-
-//Play a series of tones to indicate inputting the wrong solution and the game ending
-void gameFailTone() {
-  tone(10, tonefs5, 125);
-  delay(125);
-  tone(10, tonef5, 125);
-  delay(125);
-  tone(10, toneg5, 250);
-  delay(750);
-  tone(10, tonec4, 125);
   delay(125);
 }
 

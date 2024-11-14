@@ -10,7 +10,16 @@ const int yellowSwitchPin = 7;
 const int greenSwitchPin = 8;
 const int blueSwitchPin = 9;
 
-int sequence[100];  // Array to store the sequence of LED colors
+const int maxSeqLen = 100;
+const int tonec4 = 261;
+const int toneg4 = 392;
+const int tonec5 = 523;
+const int tonef5 = 698;
+const int tonefs5 = 740;
+const int toneg5 = 784;
+const int tonec6 = 1046;
+
+int sequence[maxSeqLen];  // Array to store the sequence of LED colors
 int sequenceLength = 0;  // Length of the sequence
 int playerStep = 0;  // Player's current step to check against sequence
 
@@ -20,6 +29,9 @@ void addRandomColorToSequence();
 void doOne(int pin, int toneFrequency);
 void endGame();
 void successTone();
+void gameStartTone();
+void gameFailTone();
+void gameWinTone();
 
 // SOUND
 // tone(10,pitch,time in milis);
@@ -67,17 +79,31 @@ void loop() {
         playerStep++;
         delay(300);  // Debounce delay to prevent multiple presses being detected too quickly
       } else {
+        gameFailTone();
         endGame();  // Player pressed the wrong button, game ends
         return;  // End the game if the player is wrong
       }
     }
   }
 
+  //we have reached the end of the max sequence. the player has WON simon. somehow.
+  if(playerStep == maxSeqLen) { 
+    gameWinTone();
+    endGame();
+    return;
+
+  }
+  
+  //otherwise: we are not at the end of the game, continue on.
   // Play a success tone after completing the sequence
   successTone();
   delay(1000);  // Short delay before adding a new color to the sequence
   addRandomColorToSequence();  // Add a new color to the sequence for the next round
   // No need to reset `playerStep` here, because we already reset it at the beginning of the round
+
+  
+
+ 
 }
 
 // Check which button was pressed
@@ -101,16 +127,16 @@ void showSequence() {
   for (int i = 0; i < sequenceLength; i++) {
     switch (sequence[i]) {
       case 1:
-        doOne(redLEDPin, 300);  // Red LED
+        doOne(redLEDPin, tonec4);  // Red LED
         break;
       case 2:
-        doOne(yellowLEDPin, 400);  // Yellow LED
+        doOne(yellowLEDPin, toneg4);  // Yellow LED
         break;
       case 3:
-        doOne(greenLEDPin, 500);  // Green LED
+        doOne(greenLEDPin, tonec5);  // Green LED
         break;
       case 4:
-        doOne(blueLEDPin, 600);  // Blue LED
+        doOne(blueLEDPin, toneg5);  // Blue LED
         break;
     }
     delay(500);  // Delay between each LED flash
@@ -136,9 +162,54 @@ void doOne(int pin, int toneFrequency) {
 // Play a success tone after completing the sequence
 void successTone() {
   // Play a success tone (higher pitch for success)
-  tone(10, 1000, 500);  // Success tone at 1000Hz for 500ms
+  tone(10, tonec6, 500);  // Success tone at 1046Hz (Roughly C6) for 500ms
   delay(500);
 }
+
+// Play a series of tones to indicate the game beginning 
+void gameStartTone() {
+  tone(10, tonec4, 125);
+  delay(125);
+  tone(10, toneg4, 125);
+  delay(125);
+  tone(10, tonec5, 125);
+  delay(125);
+  tone(10, toneg5, 125);
+  delay(625);
+  tone(10, tonec6, 125);
+  delay(125);
+}
+
+//Play a series of tones to indicate inputting the wrong solution and the game ending
+void gameFailTone() {
+  tone(10, tonefs5, 125);
+  delay(125);
+  tone(10, tonef5, 125);
+  delay(125);
+  tone(10, toneg5, 250);
+  delay(750);
+  tone(10, tonec4, 125);
+  delay(125);
+}
+
+//Play a tone to indicate you've won the game (somehow doing the WHOLE sequence)
+void gameWinTone() {
+  for(int i = 0; i < 3; ++i) {
+    tone(10, toneg4, 125);
+    delay(125);
+    tone(10, tonec5, 125);
+    delay(125);
+    tone(10, toneg5, 125);
+    delay(125);
+    tone(10, tonec6, 125);
+    delay(125);
+  }
+  tone(10, tonec4, 125);
+  delay(250);
+  tone(10, tonec4, 125);
+  delay(250);
+}
+
 
 // End the game by resetting the sequence and player step
 void endGame() {

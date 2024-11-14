@@ -10,7 +10,7 @@ const int yellowSwitchPin = 7;
 const int greenSwitchPin = 8;
 const int blueSwitchPin = 9;
 
-const int maxSeqLen = 100;
+const int maxSeqLen = 25;
 const int tonec4 = 261;
 const int toneg4 = 392;
 const int tonec5 = 523;
@@ -30,7 +30,7 @@ void doOne(int pin, int toneFrequency);
 void endGame();
 void successTone();
 void gameStartTone();
-void gameFailTone();
+void inputReadyTone();
 void gameWinTone();
 
 // SOUND
@@ -62,6 +62,7 @@ void setup() {
 void loop() {
   // Show the sequence to the player
   showSequence();
+  inputReadyTone();
 
   // Wait for the player to input their response
   playerStep = 0;  // Ensure playerStep starts from 0 at the start of the round
@@ -195,6 +196,10 @@ void gameWinTone() {
   delay(250);
   tone(10, tonec4, 125);
   delay(250);
+}
+
+void inputReadyTone() {
+  tone(10, tonef5, 125);
 }
 
 
